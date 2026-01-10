@@ -1,3 +1,4 @@
+Fitur
 - Memakai sistem database MySQL
 - Enkripsi password akun memakai Samp Bcrypt
 - Basic kendaraan save load
