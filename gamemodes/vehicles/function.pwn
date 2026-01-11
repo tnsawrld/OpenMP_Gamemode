@@ -22,15 +22,18 @@ stock AddVeh(playerid, model, Float:x, Float:y, Float:z, Float:a, color1, color2
     return 1;
 }
 
-stock UpdateParkVehice(vehicleid)
+stock UpdateDataVehicle(vehicleid)
 {
     if(vehicleid == INVALID_VEHICLE_ID) return 0;
     if(!g_VehicleData[vehicleid][E_IS_EXISTS]) return 0;
     if(g_VehicleData[vehicleid][E_VEHICLE_ID] <= 0) return 0;
 
     new query[300];
-    mysql_format(g_SQL, query, sizeof(query), "UPDATE vehicles SET pos_x = '%f', pos_y = '%f', pos_z = '%f', pos_a = '%f' WHERE id = '%d' LIMIT 1", g_VehicleData[vehicleid][E_VEHICLE_POS][0], g_VehicleData[vehicleid][E_VEHICLE_POS][1], g_VehicleData[vehicleid][E_VEHICLE_POS][2], g_VehicleData[vehicleid][E_VEHICLE_POS][3], g_VehicleData[vehicleid][E_VEHICLE_ID]);
+    mysql_format(g_SQL, query, sizeof(query), "UPDATE vehicles SET pos_x = '%f', pos_y = '%f', pos_z = '%f', pos_a = '%f' WHERE id = '%d' LIMIT 1", 
+    g_VehicleData[vehicleid][E_VEHICLE_POS][0], g_VehicleData[vehicleid][E_VEHICLE_POS][1], g_VehicleData[vehicleid][E_VEHICLE_POS][2], 
+    g_VehicleData[vehicleid][E_VEHICLE_POS][3], g_VehicleData[vehicleid][E_VEHICLE_ID]);
+    
     mysql_tquery(g_SQL, query);
-    printf("[VEHICLE] Kendaraan id %d berhasil diparkirkan!", g_VehicleData[vehicleid][E_VEHICLE_ID]);
+    printf("[VEHICLE] Kendaraan id %d diupdate!", g_VehicleData[vehicleid][E_VEHICLE_ID]);
     return 1;
 }

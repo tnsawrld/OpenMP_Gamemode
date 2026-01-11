@@ -44,6 +44,9 @@ CMD:parkveh(playerid)
         return SendClientMessage(playerid, COLOR_ERROR, "ERROR: {ffffff}Kamu tidak sedang didalam kursi kemudi!");
 
     new vehicleid = GetPlayerVehicleID(playerid);
+    
+    if(!g_VehicleData[vehicleid][E_IS_EXISTS])   
+        return SendClientMessage(playerid, COLOR_ERROR, "ERROR: {ffffff}Kendaraan tidak terspawn!");
 
     if(g_VehicleData[vehicleid][E_VEHICLE_OWNER] != g_PlayerData[playerid][E_PLAYER_ID])
         return SendClientMessage(playerid, COLOR_ERROR, "ERROR: {ffffff}Kendaraan ini bukan milikmu!");
@@ -51,22 +54,10 @@ CMD:parkveh(playerid)
     if(g_VehicleData[vehicleid][E_VEHICLE_ID] <= 0)
         return SendClientMessage(playerid, COLOR_ERROR, "ERROR: {ffffff}Kendaraan ini tidak tersedia didalam database");
 
-    new Float: newPos[4];
-    GetVehiclePos(vehicleid, newPos[0], newPos[1], newPos[2]);
-    GetVehicleZAngle(vehicleid, newPos[3]);
+    GetVehiclePos(vehicleid, g_VehicleData[vehicleid][E_VEHICLE_POS][0], g_VehicleData[vehicleid][E_VEHICLE_POS][1], g_VehicleData[vehicleid][E_VEHICLE_POS][2]);
+    GetVehicleZAngle(vehicleid, g_VehicleData[vehicleid][E_VEHICLE_POS][3]);
 
-    g_VehicleData[vehicleid][E_VEHICLE_POS][0] = newPos[0];
-    g_VehicleData[vehicleid][E_VEHICLE_POS][1] = newPos[1];
-    g_VehicleData[vehicleid][E_VEHICLE_POS][2] = newPos[2];
-    g_VehicleData[vehicleid][E_VEHICLE_POS][3] = newPos[3];
-
-    if(UpdateParkVehice(vehicleid))
-    {
-        SendClientMessage(playerid, COLOR_SERVER, "SERVER: {ffffff}Kendaraan kamu berhasil diparkirkan!");
-    }
-    else
-    {
-        SendClientMessage(playerid, COLOR_ERROR, "ERROR: {ffffff}Kendaraan kamu Gagal diparkirkan!");
-    }
+    UpdateDataVehicle(vehicleid);
+    SendClientMessage(playerid, COLOR_SERVER, "SERVER: {ffffff}Kendaraan kamu berhasil diparkirkan!");
     return 1;
 }

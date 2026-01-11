@@ -1,10 +1,3 @@
-// stock AddVehicle(ownerid, modelid, Float:pos_x, Float:pos_y, Float:pos_z, Float:pos_a, color1, color2)
-// {
-    
-//     new vehicleid = CreateVehicle(modelid, pos_x, pos_y, pos_z, pos_a, color1, color2, -1, false);
-//     return 1;
-// }
-
 forward OnVehicleLoaded();
 public OnVehicleLoaded()
 {
@@ -48,7 +41,7 @@ public OnVehicleLoaded()
         g_VehicleData[vehicleid][E_VEHICLE_COLOR2] = color2;
         g_VehicleData[vehicleid][E_IS_EXISTS] = true;
 
-        Iter_Add(PlayerVehicle, vehicle_id);
+        Iter_Add(PlayerVehicle, vehicleid);
         loaded++;
     }
     printf("[VEHICLE] Kendaraan sebanyak %d berhasil dimuat", loaded);

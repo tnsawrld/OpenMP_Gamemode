@@ -46,7 +46,9 @@ enum E_VEHICLE_DATA{
 	E_VEHICLE_COLOR1,
 	E_VEHICLE_COLOR2,
 	// temp
-	bool:E_IS_EXISTS
+	bool:E_IS_EXISTS,
+	E_COOLDOWN_SAVE
+		
 };
 
 new g_VehicleData[MAX_VEHICLES][E_VEHICLE_DATA];
@@ -150,6 +152,20 @@ public OnPlayerEnterVehicle(playerid, vehicleid, ispassenger)
 
 public OnPlayerExitVehicle(playerid, vehicleid)
 {
+	if(GetPlayerState(playerid) == PLAYER_STATE_DRIVER)
+	{
+		if((gettime() - g_VehicleData[vehicleid][E_COOLDOWN_SAVE] < 20)) return SendClientMessage(playerid, COLOR_WHITE, "Delay 20 detik untuk save");
+		g_VehicleData[vehicleid][E_COOLDOWN_SAVE] = gettime();
+		GetVehiclePos(vehicleid, g_VehicleData[vehicleid][E_VEHICLE_POS][0], g_VehicleData[vehicleid][E_VEHICLE_POS][1], g_VehicleData[vehicleid][E_VEHICLE_POS][2]);
+		GetVehicleZAngle(vehicleid, g_VehicleData[vehicleid][E_VEHICLE_POS][3]);
+
+		UpdateDataVehicle(vehicleid);
+		SendClientMessage(playerid, COLOR_WHITE, "Kamu keluar dari kursi pengemudi kendaraan, vehid %d [disimpan]", vehicleid);
+	}
+	else 
+	{
+		SendClientMessage(playerid, COLOR_WHITE, "Kamu keluar dari kursi penumpang kendaraan, vehid %d [tidak disimpan]", vehicleid);
+	}
 	return 1;
 }
 
