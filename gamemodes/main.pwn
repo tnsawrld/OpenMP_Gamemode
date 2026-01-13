@@ -1,5 +1,4 @@
 #define YSI_NO_VERSION_CHECK
-
 #include <open.mp>
 
 #undef MAX_PLAYERS
@@ -15,56 +14,39 @@
 #include <sscanf2>
 #include <YSI_Data\y_iterate>
 
-#include "define.pwn"
-#include "server\general_var.pwn"
+#include "server\server_define.pwn"
+#include "server\server_textdraw.pwn"
+#include "server\server_variable.pwn"
 
 // enum player
 enum E_PLAYER_DATA{
-	E_PLAYER_ID,
-	E_PLAYER_NAME[MAX_PLAYER_NAME],
-	E_PLAYER_PASSWORD[128],
-	Float:E_PLAYER_POS[4],
-	E_PLAYER_INTERIOR,
-	E_PLAYER_VW,
-	E_PLAYER_SKIN,
-	E_PLAYER_MONEY,
-	E_PLAYER_LEVEL,
+	pID,
+	pName[MAX_PLAYER_NAME],
+	pPassword[128],
+	Float:pPos[4],
+	pInterior,
+	pVirtual_World,
+	pSkin,
+	pMoney,
+	pLevel,
 	
 	// temp variable
-	bool:E_IS_LOGIN,
-	Cache: E_CACHE_ID,
-	E_LOGIN_ATTEMPTS
+	bool:isLogin,
+	Cache: pCacheID,
+	pLoginAttempt
 };
 
 new g_PlayerData[MAX_PLAYERS][E_PLAYER_DATA];
 
-enum E_VEHICLE_DATA{
-	E_VEHICLE_ID,
-	E_VEHICLE_OWNER,
-	E_VEHICLE_MODEL,
-	Float: E_VEHICLE_POS[4],
-	E_VEHICLE_COLOR1,
-	E_VEHICLE_COLOR2,
-	// temp
-	bool:E_IS_EXISTS,
-	E_COOLDOWN_SAVE
-		
-};
+#include "server\server_function.pwn"
 
-new g_VehicleData[MAX_VEHICLES][E_VEHICLE_DATA];
-new Iterator: PlayerVehicle<MAX_VEHICLES>; 
+#include "players\player_account.pwn"
+#include "players\player_utils.pwn"
+#include "players\player_command.pwn"
 
-// ====================[INCLUDE]=========================
-
-#include "server\general_func.pwn"
-// milik player
-#include "players\function.pwn"
-#include "players\accounts_handler.pwn"
-#include "players\player_cmd.pwn"
-
-#include "vehicles\function.pwn"
-#include "vehicles\vehicle_handler.pwn"
-#include "vehicles\vehicle_cmd.pwn"
+#include "vehicles\vehicle_data.pwn"
+#include "vehicles\vehicle_core.pwn"
+#include "vehicles\vehicle_command.pwn"
 
 
 main()
@@ -77,6 +59,8 @@ public OnGameModeInit()
 {
 	// mysql
 	ConnectToDatabase(MYSQL_HOST, MYSQL_USER, MYSQL_PASS, MYSQL_DBNAME);
+	
+	CreateGlobalTextdraw();
 
 	SetGameModeText("gamemooodeeeee");
 	DisableInteriorEnterExits();
@@ -97,6 +81,10 @@ public OnGameModeExit()
 
 public OnPlayerConnect(playerid)
 {
+	// textdraw server
+	TextDrawShowForPlayer(playerid, Server_Name[0]);
+	TextDrawShowForPlayer(playerid, Server_Name[1]);
+
 	// reset g_PlayerData
 	ResetValueVariable(playerid);
 	GetPlayerNameEx(playerid);
@@ -106,7 +94,7 @@ public OnPlayerConnect(playerid)
 	GetPlayerIp(playerid, ip, sizeof(ip));
 	SendClientMessage(playerid, COLOR_WHITE, "IP : %s", ip);
 	printf("player id %d dengan ip %s telah bergabung ke server", playerid, ip);
-	SendClientMessageToAll(COLOR_SERVER,"SERVER: {ffffff}%s telah bergabung kedalam server!", g_PlayerData[playerid][E_PLAYER_NAME]);
+	SendClientMessageToAll(COLOR_SERVER,"SERVER: {ffffff}%s telah bergabung kedalam server!", g_PlayerData[playerid][pName]);
 	return 1;
 }
 
@@ -116,14 +104,14 @@ public OnPlayerDisconnect(playerid, reason)
 	
 	UpdateDataPlayer(playerid, reason);
 
-	// jika player crash sebelunm berhasil login akan dibuang dan tidak disave
-	if (cache_is_valid(g_PlayerData[playerid][E_CACHE_ID]))
+	// player crash sebelunm berhasil login
+	if (cache_is_valid(g_PlayerData[playerid][pCacheID]))
 	{
-		cache_delete(g_PlayerData[playerid][E_CACHE_ID]);
-		g_PlayerData[playerid][E_CACHE_ID] = MYSQL_INVALID_CACHE;
+		cache_delete(g_PlayerData[playerid][pCacheID]);
+		g_PlayerData[playerid][pCacheID] = MYSQL_INVALID_CACHE;
 		print("CACHE DIHAPUS, crash");
 	}
-	g_PlayerData[playerid][E_IS_LOGIN] = false;
+	g_PlayerData[playerid][isLogin] = false;
 	// ResetValueVariable(playerid);
 	return 1;
 }
@@ -154,10 +142,10 @@ public OnPlayerExitVehicle(playerid, vehicleid)
 {
 	if(GetPlayerState(playerid) == PLAYER_STATE_DRIVER)
 	{
-		if((gettime() - g_VehicleData[vehicleid][E_COOLDOWN_SAVE] < 20)) return SendClientMessage(playerid, COLOR_WHITE, "Delay 20 detik untuk save");
-		g_VehicleData[vehicleid][E_COOLDOWN_SAVE] = gettime();
-		GetVehiclePos(vehicleid, g_VehicleData[vehicleid][E_VEHICLE_POS][0], g_VehicleData[vehicleid][E_VEHICLE_POS][1], g_VehicleData[vehicleid][E_VEHICLE_POS][2]);
-		GetVehicleZAngle(vehicleid, g_VehicleData[vehicleid][E_VEHICLE_POS][3]);
+		if((gettime() - g_VehicleData[vehicleid][vCooldownSave] < 20)) return SendClientMessage(playerid, COLOR_WHITE, "Delay 20 detik untuk save");
+		g_VehicleData[vehicleid][vCooldownSave] = gettime();
+		GetVehiclePos(vehicleid, g_VehicleData[vehicleid][vPos][0], g_VehicleData[vehicleid][vPos][1], g_VehicleData[vehicleid][vPos][2]);
+		GetVehicleZAngle(vehicleid, g_VehicleData[vehicleid][vPos+][3]);
 
 		UpdateDataVehicle(vehicleid);
 		SendClientMessage(playerid, COLOR_WHITE, "Kamu keluar dari kursi pengemudi kendaraan, vehid %d [disimpan]", vehicleid);
@@ -189,7 +177,7 @@ public OnVehicleDeath(vehicleid, killerid)
 
 public OnPlayerRequestSpawn(playerid)
 {
-	if(!g_PlayerData[playerid][E_IS_LOGIN])
+	if(!g_PlayerData[playerid][isLogin])
 	{
 		SendClientMessage(playerid, COLOR_ERROR, "ERROR: Kamu tidak diizinkan menekan tombol spawn!");
 		return 0;
@@ -205,7 +193,7 @@ public OnPlayerCommandText(playerid, cmdtext[])
 public OnPlayerText(playerid, text[])
 {
 	new msg[144];
-	format(msg, sizeof(msg), "%s [%d] : %s", g_PlayerData[playerid][E_PLAYER_NAME], playerid, text);
+	format(msg, sizeof(msg), "%s [%d] : %s", g_PlayerData[playerid][pName], playerid, text);
 
 	new Float:posX,
 		Float:posY,
@@ -529,7 +517,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		{
 			if(!response) return KickEx(playerid);
 
-			bcrypt_verify(playerid, "OnPasswordVerify", inputtext, g_PlayerData[playerid][E_PLAYER_PASSWORD]);
+			bcrypt_verify(playerid, "OnPasswordVerify", inputtext, g_PlayerData[playerid][pPassword]);
 		}
 
 		case DIALOG_REGISTER:

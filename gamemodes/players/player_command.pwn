@@ -1,6 +1,6 @@
 CMD:cekuang(playerid)
 {
-    SendClientMessage(playerid, COLOR_WHITE, "Uang player sekarang adalah %d", g_PlayerData[playerid][E_PLAYER_MONEY]);
+    SendClientMessage(playerid, COLOR_WHITE, "Uang player sekarang adalah %d", g_PlayerData[playerid][pMoney]);
     return 1;
 }
 CMD:addmoney(playerid, params[])
@@ -19,9 +19,9 @@ CMD:addmoney(playerid, params[])
 
     GivePlayerMoneyEx(targetId, amountMoney);
     // info untuk player
-    SendClientMessage(playerid, COLOR_SUCCESS, "SUCCESS: {ffffff}Kamu berhasil menambah uang dari %s sebanyak %d", g_PlayerData[targetId][E_PLAYER_NAME], amountMoney);
+    SendClientMessage(playerid, COLOR_SUCCESS, "SUCCESS: {ffffff}Kamu berhasil menambah uang dari %s sebanyak %d", g_PlayerData[targetId][pName], amountMoney);
     // info untuk target 
-    SendClientMessage(targetId, COLOR_INFO, "INFO: {ffffff}Kamu mendapatkan uang dari %s sebanyak %d", g_PlayerData[playerid][E_PLAYER_NAME], amountMoney);
+    SendClientMessage(targetId, COLOR_INFO, "INFO: {ffffff}Kamu mendapatkan uang dari %s sebanyak %d", g_PlayerData[playerid][pName], amountMoney);
     return 1;
 }
 
@@ -38,10 +38,10 @@ CMD:kick(playerid, params[])
 
     KickEx(targetId);
     // info untuk player
-    SendClientMessage(playerid, COLOR_SUCCESS, "SUCCESS: {ffffff}Kamu telah menendang %s keluar server dengan alasan %s", g_PlayerData[targetId][E_PLAYER_NAME], reasonKick);
+    SendClientMessage(playerid, COLOR_SUCCESS, "SUCCESS: {ffffff}Kamu telah menendang %s keluar server dengan alasan %s", g_PlayerData[targetId][pName], reasonKick);
 
     // info untuk target
-    SendClientMessage(targetId, COLOR_INFO, "INFO: {ffffff}Kamu telah ditendang keluar server oleh %s dengan alasan %s", g_PlayerData[playerid][E_PLAYER_NAME], reasonKick);
+    SendClientMessage(targetId, COLOR_INFO, "INFO: {ffffff}Kamu telah ditendang keluar server oleh %s dengan alasan %s", g_PlayerData[playerid][pName], reasonKick);
     // printf("Player id %d telah dikick dari server dengan alasan %s", targetId, reasonKick);
     return 1;
 }
@@ -62,10 +62,10 @@ CMD:sethp(playerid, params[])
 
     SetPlayerHealth(targetId, healthPlayer);
     // info untuk player
-    SendClientMessage(playerid, COLOR_SUCCESS, "SUCCESS: {ffffff}Kamu telah mengubah health dari %s sebanyak %.2f", g_PlayerData[targetId][E_PLAYER_NAME], healthPlayer);
+    SendClientMessage(playerid, COLOR_SUCCESS, "SUCCESS: {ffffff}Kamu telah mengubah health dari %s sebanyak %.2f", g_PlayerData[targetId][pName], healthPlayer);
 
     // info untuk target
-    SendClientMessage(targetId, COLOR_INFO, "INFO: {ffffff}Health kamu telah diubah oleh %s sebanyak %.2f", g_PlayerData[playerid][E_PLAYER_NAME], healthPlayer);
+    SendClientMessage(targetId, COLOR_INFO, "INFO: {ffffff}Health kamu telah diubah oleh %s sebanyak %.2f", g_PlayerData[playerid][pName], healthPlayer);
     return 1;
 }
 
@@ -85,10 +85,10 @@ CMD:setarmor(playerid, params[])
     
     SetPlayerArmour(targetId, amountArmour);
     // info untuk player
-    SendClientMessage(playerid, COLOR_SUCCESS, "SUCCESS: {ffffff}Kamu telah mengubah armor dari %s sebanyak %.2f", g_PlayerData[targetId][E_PLAYER_NAME], amountArmour);
+    SendClientMessage(playerid, COLOR_SUCCESS, "SUCCESS: {ffffff}Kamu telah mengubah armor dari %s sebanyak %.2f", g_PlayerData[targetId][pName], amountArmour);
 
     // info untuk target
-    SendClientMessage(targetId, COLOR_INFO, "INFO: {ffffff}Armor kamu telah diubah oleh %s sebanyak %.2f", g_PlayerData[playerid][E_PLAYER_NAME], amountArmour);
+    SendClientMessage(targetId, COLOR_INFO, "INFO: {ffffff}Armor kamu telah diubah oleh %s sebanyak %.2f", g_PlayerData[playerid][pName], amountArmour);
     return 1;
 }
 
@@ -158,11 +158,11 @@ CMD:setlevel(playerid, params[])
         return SendClientMessage(playerid, COLOR_ERROR, "ERROR: {ffffff}Player tidak terkoneksi kedalam server!");
     
     SetPlayerScore(targetId, amountLevel);
-    g_PlayerData[targetId][E_PLAYER_LEVEL] = amountLevel;
+    g_PlayerData[targetId][pLevel] = amountLevel;
     // info untuk player
-    SendClientMessage(playerid, COLOR_SUCCESS, "SUCCESS: {ffffff}Kamu berhasil mengubah level dari player %s ke level %d", g_PlayerData[targetId][E_PLAYER_NAME], amountLevel);
+    SendClientMessage(playerid, COLOR_SUCCESS, "SUCCESS: {ffffff}Kamu berhasil mengubah level dari player %s ke level %d", g_PlayerData[targetId][pName], amountLevel);
     // info untuk target
-    SendClientMessage(targetId, COLOR_INFO, "INFO: {ffffff}Level kamu diubah oleh %s ke level %d", g_PlayerData[playerid][E_PLAYER_NAME], amountLevel);
+    SendClientMessage(targetId, COLOR_INFO, "INFO: {ffffff}Level kamu diubah oleh %s ke level %d", g_PlayerData[playerid][pName], amountLevel);
     return 1;
 }
 
@@ -178,12 +178,12 @@ CMD:setinterior(playerid, params[])
         return SendClientMessage(playerid, COLOR_ERROR, "ERROR: {ffffff}Player tidak terkoneksi kedalam server!");
     
     SetPlayerInterior(playerid, interior);
-    g_PlayerData[targetId][E_PLAYER_INTERIOR] = interior;
+    g_PlayerData[targetId][pInterior] = interior;
 
     // info player
-    SendClientMessage(playerid, COLOR_SUCCESS, "SUCCESS: {ffffff}Kamu telah mengubah interior dari %s ke %d", g_PlayerData[targetId][E_PLAYER_INTERIOR], interior);
+    SendClientMessage(playerid, COLOR_SUCCESS, "SUCCESS: {ffffff}Kamu telah mengubah interior dari %s ke %d", g_PlayerData[targetId][pName], interior);
     // info untuk target
-    SendClientMessage(playerid, COLOR_INFO, "INFO: {ffffff}Interior kamu telah diubah oleh %s ke %d", g_PlayerData[playerid][E_PLAYER_INTERIOR], interior);
+    SendClientMessage(playerid, COLOR_INFO, "INFO: {ffffff}Interior kamu telah diubah oleh %s ke %d", g_PlayerData[playerid][pName], interior);
     return 1;
 }
 
@@ -202,12 +202,12 @@ CMD:setskin(playerid, params[])
         return SendClientMessage(playerid, COLOR_ERROR, "ERROR: {ffffff}Id skin tidak boleh kurang dari 0 atau lebih dari 311!");
     
     SetPlayerSkin(targetId, skinId);
-    g_PlayerData[targetId][E_PLAYER_SKIN] = skinId;
+    g_PlayerData[targetId][pSkin] = skinId;
 
     // info untuk player
-    SendClientMessage(playerid, COLOR_SUCCESS, "SUCCESS: {ffffff}Kamu telah mengubah skin dari %s ke id %d", g_PlayerData[targetId][E_PLAYER_NAME], skinId);
+    SendClientMessage(playerid, COLOR_SUCCESS, "SUCCESS: {ffffff}Kamu telah mengubah skin dari %s ke id %d", g_PlayerData[targetId][pName], skinId);
     // info ubtuj target
-    SendClientMessage(playerid, COLOR_INFO, "INFO: {ffffff}Skin kamu telah diubah oleh %s ke id %d", g_PlayerData[playerid][E_PLAYER_NAME], skinId);
+    SendClientMessage(playerid, COLOR_INFO, "INFO: {ffffff}Skin kamu telah diubah oleh %s ke id %d", g_PlayerData[playerid][pName], skinId);
     return 1;
 }
 
@@ -223,12 +223,12 @@ CMD:setvw(playerid, params[])
         return SendClientMessage(playerid, COLOR_ERROR, "ERROR: {ffffff}Player tidak terkoneksi kedalam server!");
     
     SetPlayerVirtualWorld(targetId, vwId);
-    g_PlayerData[targetId][E_PLAYER_VW] = vwId;
+    g_PlayerData[targetId][pVirtual_World] = vwId;
 
     // info untuk player
-    SendClientMessage(playerid, COLOR_SUCCESS, "SUCCESS: {ffffff}Kamu telah mengubah virtual world dari %s ke id %d", g_PlayerData[targetId][E_PLAYER_NAME], vwId);
+    SendClientMessage(playerid, COLOR_SUCCESS, "SUCCESS: {ffffff}Kamu telah mengubah virtual world dari %s ke id %d", g_PlayerData[targetId][pName], vwId);
     // info ubtuj target
-    SendClientMessage(playerid, COLOR_INFO, "INFO: {ffffff}Virtual world kamu telah diubah oleh %s ke id %d", g_PlayerData[playerid][E_PLAYER_NAME], vwId);
+    SendClientMessage(playerid, COLOR_INFO, "INFO: {ffffff}Virtual world kamu telah diubah oleh %s ke id %d", g_PlayerData[playerid][pName], vwId);
     return 1;
 }
 

@@ -45,17 +45,17 @@ CMD:parkveh(playerid)
 
     new vehicleid = GetPlayerVehicleID(playerid);
     
-    if(!g_VehicleData[vehicleid][E_IS_EXISTS])   
+    if(!g_VehicleData[vehicleid][isExists])   
         return SendClientMessage(playerid, COLOR_ERROR, "ERROR: {ffffff}Kendaraan tidak terspawn!");
 
-    if(g_VehicleData[vehicleid][E_VEHICLE_OWNER] != g_PlayerData[playerid][E_PLAYER_ID])
+    if(g_VehicleData[vehicleid][vOwner] != g_PlayerData[playerid][pID])
         return SendClientMessage(playerid, COLOR_ERROR, "ERROR: {ffffff}Kendaraan ini bukan milikmu!");
 
-    if(g_VehicleData[vehicleid][E_VEHICLE_ID] <= 0)
+    if(g_VehicleData[vehicleid][vID] <= 0)
         return SendClientMessage(playerid, COLOR_ERROR, "ERROR: {ffffff}Kendaraan ini tidak tersedia didalam database");
 
-    GetVehiclePos(vehicleid, g_VehicleData[vehicleid][E_VEHICLE_POS][0], g_VehicleData[vehicleid][E_VEHICLE_POS][1], g_VehicleData[vehicleid][E_VEHICLE_POS][2]);
-    GetVehicleZAngle(vehicleid, g_VehicleData[vehicleid][E_VEHICLE_POS][3]);
+    GetVehiclePos(vehicleid, g_VehicleData[vehicleid][vPos][0], g_VehicleData[vehicleid][vPos][1], g_VehicleData[vehicleid][vPos][2]);
+    GetVehicleZAngle(vehicleid, g_VehicleData[vehicleid][vPos][3]);
 
     UpdateDataVehicle(vehicleid);
     SendClientMessage(playerid, COLOR_SERVER, "SERVER: {ffffff}Kendaraan kamu berhasil diparkirkan!");
