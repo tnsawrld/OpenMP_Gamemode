@@ -1,4 +1,4 @@
-
+[Changelog](https://github.com/tnsawrld/OpenMP_Gamemode/blob/main/changelog.md)
 
 Plugins yang dipakai 
 - [MySQL] https://github.com/pBlueG/SA-MP-MySQL
