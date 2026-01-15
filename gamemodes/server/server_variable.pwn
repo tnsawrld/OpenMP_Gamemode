@@ -1,9 +1,4 @@
 new g_CP[MAX_PLAYERS];
 new MySQL:g_SQL;
 new g_MysqlRaceCheck[MAX_PLAYERS];
-
-enum {
-	DIALOG_UNUSED,
-	DIALOG_LOGIN,
-	DIALOG_REGISTER
-}
+new m_SkinSpawn, f_SkinSpawn;

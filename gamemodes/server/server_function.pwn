@@ -15,11 +15,16 @@ ResetValueVariable(playerid)
 	g_PlayerData[playerid][pPos][1] = 0.0;
 	g_PlayerData[playerid][pPos][2] = 0.0;
 	g_PlayerData[playerid][pPos][3] = 0.0;
+	g_PlayerData[playerid][pBirthDay] = 0;
+	g_PlayerData[playerid][pBirthMonth] = 0;
+	g_PlayerData[playerid][pBirthYear] = 0;
+	g_PlayerData[playerid][pGender] = -1;
 
 	// bagian login register
 	g_PlayerData[playerid][isLogin] = false;
 	g_PlayerData[playerid][pCacheID] = MYSQL_INVALID_CACHE;
 	g_PlayerData[playerid][pLoginAttempt] = 0;
+	g_PlayerData[playerid][isOfficialClient] = false;
 
 	print("[PLAYER] Variable berhasil direset");
 	return 1;
@@ -60,4 +65,12 @@ stock ConnectToDatabase(const host[], const user[], const pass[], const db[])
 	}
 
 	print("[MYSQL] Berhasil terhubung");
+}
+
+
+// unused Dialog
+Dialog:DialogUnused(playerid, response, listitem, inputtext[])
+{
+	if(response) return 1;
+	return 1;
 }

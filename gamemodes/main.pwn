@@ -7,12 +7,14 @@
 #undef MAX_VEHICLES
 #define MAX_VEHICLES 100
 
+#include <YSI_Data\y_iterate>
 #include <streamer>
 #include <Pawn.CMD>
 #include <a_mysql>
 #include <samp_bcrypt>
 #include <sscanf2>
-#include <YSI_Data\y_iterate>
+#include <easyDialog>
+#include <mSelection>
 
 #include "server\server_define.pwn"
 #include "server\server_textdraw.pwn"
@@ -29,19 +31,24 @@ enum E_PLAYER_DATA{
 	pSkin,
 	pMoney,
 	pLevel,
+	pBirthDay,
+	pBirthMonth,
+	pBirthYear,
+	pGender,
 	
 	// temp variable
 	bool:isLogin,
 	Cache: pCacheID,
-	pLoginAttempt
+	pLoginAttempt,
+	bool:isOfficialClient
 };
 
 new g_PlayerData[MAX_PLAYERS][E_PLAYER_DATA];
 
 #include "server\server_function.pwn"
 
-#include "players\player_account.pwn"
 #include "players\player_utils.pwn"
+#include "players\player_account.pwn"
 #include "players\player_command.pwn"
 
 #include "vehicles\vehicle_data.pwn"
@@ -57,6 +64,9 @@ main()
 // Disaat gamemode start
 public OnGameModeInit()
 {
+	m_SkinSpawn = LoadModelSelectionMenu("male_spawnskin.txt");
+	f_SkinSpawn = LoadModelSelectionMenu("female_spawnskin.txt");
+
 	// mysql
 	ConnectToDatabase(MYSQL_HOST, MYSQL_USER, MYSQL_PASS, MYSQL_DBNAME);
 	
@@ -145,7 +155,7 @@ public OnPlayerExitVehicle(playerid, vehicleid)
 		if((gettime() - g_VehicleData[vehicleid][vCooldownSave] < 20)) return SendClientMessage(playerid, COLOR_WHITE, "Delay 20 detik untuk save");
 		g_VehicleData[vehicleid][vCooldownSave] = gettime();
 		GetVehiclePos(vehicleid, g_VehicleData[vehicleid][vPos][0], g_VehicleData[vehicleid][vPos][1], g_VehicleData[vehicleid][vPos][2]);
-		GetVehicleZAngle(vehicleid, g_VehicleData[vehicleid][vPos+][3]);
+		GetVehicleZAngle(vehicleid, g_VehicleData[vehicleid][vPos][3]);
 
 		UpdateDataVehicle(vehicleid);
 		SendClientMessage(playerid, COLOR_WHITE, "Kamu keluar dari kursi pengemudi kendaraan, vehid %d [disimpan]", vehicleid);
@@ -507,28 +517,28 @@ public OnUnoccupiedVehicleUpdate(vehicleid, playerid, passenger_seat, Float:new_
 	return 1;
 }
 
-public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
+public OnPlayerModelSelection(playerid, response, listid, modelid)
 {
-	switch (dialogid)
+	if(listid == m_SkinSpawn) 
 	{
-		case DIALOG_UNUSED: return 1;
-
-		case DIALOG_LOGIN:
+		if(response)
 		{
-			if(!response) return KickEx(playerid);
-
-			bcrypt_verify(playerid, "OnPasswordVerify", inputtext, g_PlayerData[playerid][pPassword]);
+			g_PlayerData[playerid][pSkin] = modelid;
+			new query[200];
+			mysql_format(g_SQL, query, sizeof(query), "INSERT INTO accounts (username, password) VALUES ('%e', '%s')", g_PlayerData[playerid][pName], g_PlayerData[playerid][pPassword]);
+			mysql_tquery(g_SQL, query, "OnAccountRegistered", "d", playerid);
 		}
+	}
 
-		case DIALOG_REGISTER:
+	if(listid == f_SkinSpawn)
+	{
+		if(response)
 		{
-			if(!response) return KickEx(playerid);
-
-			if(strlen(inputtext) <= 5) return ShowPlayerDialog(playerid, DIALOG_REGISTER, DIALOG_STYLE_PASSWORD, "Registrasi Akun", "Password harus lebih panjang dari 5 karakter!\nSilahkan buat password untuk melanjutkan registrasi.", "Proses", "Tutup");
-
-			bcrypt_hash(playerid, "OnPasswordHashed", inputtext, BCRYPT_COST);
-		} 
-		default: return 0; 
+			g_PlayerData[playerid][pSkin] = modelid;
+			new query[200];
+			mysql_format(g_SQL, query, sizeof(query), "INSERT INTO accounts (username, password) VALUES ('%e', '%s')", g_PlayerData[playerid][pName], g_PlayerData[playerid][pPassword]);
+			mysql_tquery(g_SQL, query, "OnAccountRegistered", "d", playerid);
+		}
 	}
 	return 1;
 }

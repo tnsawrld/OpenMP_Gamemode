@@ -25,7 +25,8 @@ stock UpdateDataPlayer(playerid, reason)
 	}
 
 	new query[500];
-	mysql_format(g_SQL, query, sizeof(query), "UPDATE accounts SET pos_x = %f, pos_y = %f, pos_z = %f, pos_a = %f, interior = %d, virtual_world = %d, skin = %d, money = %d, level = %d WHERE id = %d LIMIT 1", 
+	mysql_format(g_SQL, query, sizeof(query), "UPDATE accounts SET birth_day = '%d', birth_month = '%d', birth_year = '%d', gender = '%d', pos_x = %f, pos_y = %f, pos_z = %f, pos_a = %f, interior = %d, virtual_world = %d, skin = %d, money = %d, level = %d WHERE id = %d LIMIT 1", 
+	g_PlayerData[playerid][pBirthDay], g_PlayerData[playerid][pBirthMonth], g_PlayerData[playerid][pBirthYear], g_PlayerData[playerid][pGender],
 	g_PlayerData[playerid][pPos][0], g_PlayerData[playerid][pPos][1], g_PlayerData[playerid][pPos][2], 
 	g_PlayerData[playerid][pPos][3], g_PlayerData[playerid][pInterior], g_PlayerData[playerid][pVirtual_World], 
 	g_PlayerData[playerid][pSkin], g_PlayerData[playerid][pMoney], g_PlayerData[playerid][pLevel],
@@ -38,6 +39,11 @@ stock UpdateDataPlayer(playerid, reason)
 stock LoadDataPlayer(playerid)
 {
 	cache_get_value_name_int(0, "id", g_PlayerData[playerid][pID]);
+	cache_get_value_name_int(0, "birth_day", g_PlayerData[playerid][pBirthDay]);
+	cache_get_value_name_int(0, "birth_month", g_PlayerData[playerid][pBirthMonth]);
+	cache_get_value_name_int(0, "birth_year", g_PlayerData[playerid][pBirthYear]);
+	cache_get_value_name_int(0, "gender", g_PlayerData[playerid][pGender]);
+
 	cache_get_value_name_float(0, "pos_x", g_PlayerData[playerid][pPos][0]);
 	cache_get_value_name_float(0, "pos_y", g_PlayerData[playerid][pPos][1]);
 	cache_get_value_name_float(0, "pos_z", g_PlayerData[playerid][pPos][2]);
@@ -63,13 +69,13 @@ public OnAccountLoaded(playerid, race_check)
 
         g_PlayerData[playerid][pCacheID] = cache_save();
 
-        format(string, sizeof(string), "Akun %s terdaftar dalam server.\nLogin ke akun kamu dengan memasukan password dibawah:", g_PlayerData[playerid][pName]);
-        ShowPlayerDialog(playerid, DIALOG_LOGIN, DIALOG_STYLE_PASSWORD, "Login Akun", string, "Login", "Tutup");
+        format(string, sizeof(string), "{ffffff}Akun {04d400}%s {ffffff}terdaftar dalam server.\nLogin ke akun kamu dengan memasukan password dibawah:", g_PlayerData[playerid][pName]);
+        Dialog_Show(playerid, DialogLogin, DIALOG_STYLE_PASSWORD, "Login", string, "Login", "Tutup");
 	}
 	else
 	{
-		format(string, sizeof(string), "Halo {04d400}%s!, {ffffff}akun kamu belum terdaftar diserver kami.\nSilahkan buat password untuk melanjutkan registrasi.", g_PlayerData[playerid][pName]);
-		ShowPlayerDialog(playerid, DIALOG_REGISTER, DIALOG_STYLE_PASSWORD, "Registrasi Akun", string, "Proses", "Tutup");
+		format(string, sizeof(string), "{ffffff}Halo {04d400}%s!, {ffffff}akun kamu belum terdaftar diserver kami.\nSilahkan buat password untuk melanjutkan registrasi.", g_PlayerData[playerid][pName]);
+		Dialog_Show(playerid, DialogRegister, DIALOG_STYLE_PASSWORD, "Register", string, "Register", "Tutup");
 	}
 	return 1;
 }
@@ -77,12 +83,14 @@ public OnAccountLoaded(playerid, race_check)
 forward OnPasswordHashed(playerid, hash_id);
 public OnPasswordHashed(playerid, hash_id)
 {
-	new hashed_password[BCRYPT_HASH_LENGTH];
-	bcrypt_get_hash(hashed_password);
+	// new hashed_password[BCRYPT_HASH_LENGTH];
+	bcrypt_get_hash(g_PlayerData[playerid][pPassword]);
 
-	new query[144];
-	mysql_format(g_SQL, query, sizeof(query), "INSERT INTO accounts (username, password) VALUES ('%e', '%s')", g_PlayerData[playerid][pName], hashed_password);
-	mysql_tquery(g_SQL, query, "OnAccountRegistered", "d", playerid);
+	// new query[144];
+	// mysql_format(g_SQL, query, sizeof(query), "INSERT INTO accounts (username, password) VALUES ('%e', '%s')", g_PlayerData[playerid][pName], hashed_password);
+	// mysql_tquery(g_SQL, query, "OnAccountRegistered", "d", playerid);
+	printf("Print pass : %s", g_PlayerData[playerid][pPassword]);
+	Dialog_Show(playerid, DialogAge, DIALOG_STYLE_INPUT, "Age", "{ffffff}Masukan tanggal lahir, {04d400}format: DD/MM/YYYY", "Input", "Tutup");
 	return 1;
 }
 
@@ -91,7 +99,7 @@ public OnPasswordVerify(playerid, bool:success)
 {
 	if(success)
 	{
-		ShowPlayerDialog(playerid, DIALOG_UNUSED, DIALOG_STYLE_MSGBOX, "Berhasil Login", "Kamu berhasil login ke akun kamu! semua data player akan diload.", "Oke", "");
+		Dialog_Show(playerid, DialogUnused, DIALOG_STYLE_MSGBOX, "Login", "{04d400}Kamu berhasil login kedalam akun, Data akan segera diload!", "Oke", "");
 
 		cache_set_active(g_PlayerData[playerid][pCacheID]);
 
@@ -113,23 +121,21 @@ public OnPasswordVerify(playerid, bool:success)
 		g_PlayerData[playerid][pLoginAttempt]++;
 		if(g_PlayerData[playerid][pLoginAttempt] >= 3)
 		{
-			ShowPlayerDialog(playerid, DIALOG_UNUSED, DIALOG_STYLE_MSGBOX, "Gagal Login", "{B82B2B}Kamu dikick karena salah memasukan password (3x)!", "Oke", "");
+			Dialog_Show(playerid, DialogUnused, DIALOG_STYLE_MSGBOX, "Login",  "{B82B2B}Kamu dikick karena salah memasukan password (3x)!", "Oke", "");
 			KickEx(playerid);
 		}
 		else
-			ShowPlayerDialog(playerid, DIALOG_LOGIN, DIALOG_STYLE_PASSWORD, "Login", "{B82B2B}Kamu salah memasukan password!\n{ffffff}Ketik kembali password kamu dengan benar: ", "Oke", "");
+			Dialog_Show(playerid, DialogLogin, DIALOG_STYLE_PASSWORD, "Login", "{B82B2B}Kamu salah memasukan password!\n{ffffff}Ketik kembali password kamu dengan benar: ", "Oke", "");
 	}
 	return 1;
 }
-
 
 forward OnAccountRegistered(playerid);
 public OnAccountRegistered(playerid)
 {
 	g_PlayerData[playerid][pID] = cache_insert_id();
-    
-	// printf("E_PLAYER_ID %d", g_PlayerData[playerid][E_PLAYER_ID]);
-	ShowPlayerDialog(playerid, DIALOG_UNUSED, DIALOG_STYLE_MSGBOX, "Registrasi berhasil", "Akun berhasil didaftarkan!, kamu akan otomatis login.", "Oke", "");
+
+	Dialog_Show(playerid, DialogUnused, DIALOG_STYLE_MSGBOX, "Register", "{04d400}Akun berhasil didaftarkan, Kamu otomatis login kedalam akun", "Oke", "");
 
 	g_PlayerData[playerid][isLogin] = true;
 
@@ -138,9 +144,54 @@ public OnAccountRegistered(playerid)
 	g_PlayerData[playerid][pPos][2] = DEFAULT_POS_Z;
 	g_PlayerData[playerid][pPos][3] = DEFAULT_POS_A;
 
-	SetSpawnInfo(playerid, NO_TEAM, 78, g_PlayerData[playerid][pPos][0], g_PlayerData[playerid][pPos][1], g_PlayerData[playerid][pPos][2], g_PlayerData[playerid][pPos][3], WEAPON_FIST, 0, WEAPON_FIST, 0, WEAPON_FIST, 0);
+	SetSpawnInfo(playerid, NO_TEAM, g_PlayerData[playerid][pSkin], g_PlayerData[playerid][pPos][0], g_PlayerData[playerid][pPos][1], g_PlayerData[playerid][pPos][2], g_PlayerData[playerid][pPos][3], WEAPON_FIST, 0, WEAPON_FIST, 0, WEAPON_FIST, 0);
 	SpawnPlayer(playerid);
 	SendClientMessage(playerid, COLOR_SERVER, "SERVER: {ffffff}Selamat datang {04d400}%s!", g_PlayerData[playerid][pName]);
 	return 1;
 }
 
+Dialog:DialogRegister(playerid, response, listitem, inputtext[])
+{
+	if(!response) return KickEx(playerid);
+
+	if(strlen(inputtext) <= 5) return Dialog_Show(playerid, DialogRegister, DIALOG_STYLE_PASSWORD, "Registrasi", "{B82B2B}Password harus lebih panjang dari 5 karakter\n{ffffff}Tolong buat password kembali sesuai ketentuan", "Register", "Tutup");
+
+	bcrypt_hash(playerid, "OnPasswordHashed", inputtext, BCRYPT_COST);
+	return 1;
+}
+
+Dialog:DialogLogin(playerid, response, listitem, inputtext[])
+{
+	if(!response) return KickEx(playerid);
+
+	bcrypt_verify(playerid, "OnPasswordVerify", inputtext, g_PlayerData[playerid][pPassword]);
+	return 1;
+}
+
+Dialog:DialogAge(playerid, response, listitem, inputtext[])
+{
+	if(!response) return KickEx(playerid);
+
+	ParseBirthDate(playerid, inputtext);
+	return 1;
+}
+
+Dialog:DialogGender(playerid, response, listitem, inputtext[])
+{
+	if(!response) return KickEx(playerid);
+
+	switch(listitem)
+	{
+		case 0:
+		{
+			ShowModelSelectionMenu(playerid, m_SkinSpawn, "Select Skin");
+			g_PlayerData[playerid][pGender] = 0;
+		}
+		case 1:
+		{
+			ShowModelSelectionMenu(playerid, f_SkinSpawn, "Select Skin");
+			g_PlayerData[playerid][pGender] = 1;
+		}
+	}
+	return 1;
+}
