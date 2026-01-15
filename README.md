@@ -7,3 +7,5 @@ Plugins yang dipakai
 - [Pawn.CMD] https://github.com/katursis/Pawn.CMD
 - [SSCANF2] https://github.com/Y-Less/sscanf
 - [Streamer] https://github.com/samp-incognito/samp-streamer-plugin
+- [mSelection] https://github.com/vdgiapp/mSelection
+- [easyDialog] https://github.com/Awsomedude/easyDialog
