@@ -1,4 +1,4 @@
-GetPlayerNameEx(playerid)
+stock GetPlayerNameEx(playerid)
 {	
 	GetPlayerName(playerid, g_PlayerData[playerid][pName], MAX_PLAYER_NAME);
 	return g_PlayerData[playerid][pName];
@@ -22,7 +22,6 @@ ResetValueVariable(playerid)
 
 	// bagian login register
 	g_PlayerData[playerid][isLogin] = false;
-	g_PlayerData[playerid][pCacheID] = MYSQL_INVALID_CACHE;
 	g_PlayerData[playerid][pLoginAttempt] = 0;
 	g_PlayerData[playerid][isOfficialClient] = false;
 
@@ -73,4 +72,22 @@ Dialog:DialogUnused(playerid, response, listitem, inputtext[])
 {
 	if(response) return 1;
 	return 1;
+}
+
+stock StartTickCount(playerid)
+{
+	g_TickCount[playerid] = GetTickCount();
+	return 1;
+}
+
+stock CalculateTickCount(playerid, const reason[] = "")
+{
+	new loadtime = GetTickCount() - g_TickCount[playerid];
+
+	new message[128];
+	format(message, sizeof(message), "[LOAD TIME] %s: %d ms", reason, loadtime);
+
+	SendClientMessage(playerid, COLOR_SERVER, message);
+    printf("Player %d load time: %d ms (%s)", playerid, loadtime, reason);
+	return loadtime;
 }

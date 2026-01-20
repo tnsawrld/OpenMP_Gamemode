@@ -234,7 +234,7 @@ CMD:setvw(playerid, params[])
 
 CMD:updatedata(playerid)
 {
-    UpdateDataPlayer(playerid, 1);
+    UpdateDataPlayer(playerid);
 
     SendClientMessage(playerid, COLOR_WHITE, "Berhasil menyimpan data pemain!");
     return 1;
