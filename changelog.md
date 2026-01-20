@@ -16,3 +16,8 @@
 - Dialog beralih menggunakan easyDialog
 - Membuat input umur dan gender
 - Menambah pilihan skin spawn memakai mSelection
+
+[changelog] 20/01/2026
+- Refactor dan Restructuring kode
+- Menambah sistem UCP (tanpa verifikasi)
+- Max karakter 3
