@@ -16,3 +16,5 @@
 #define DEFAULT_POS_Y 1343.0073
 #define DEFAULT_POS_Z 15.3746
 #define DEFAULT_POS_A 268.6832
+
+#define GAMEMODE "OMP blabla"

@@ -13,7 +13,8 @@
     },
     "logo": "",
     "discord": {
-        "invite": ""
+        "invite": "",
+        "bot_token": ""
     },
     "chat_input_filter": true,
     "enable_query": true,

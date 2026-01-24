@@ -23,42 +23,51 @@
 #include <sscanf2>
 #include <easyDialog>
 #include <mSelection>
+#include <discord-connector>
+#include <discord-cmd>
 
+// file server module 
 #include "modules\server\server_define.inc"
 #include "modules\server\server_macro.inc"
 #include "modules\server\server_textdraw.pwn"
 #include "modules\server\server_variable.inc"
 
-#include "modules\players\core.inc"
+// file player module
+#include "modules\players\player_data.inc"
 #include "modules\players\player_utils.inc"
 #include "modules\players\player_ucp.inc"
 #include "modules\players\player_dialog.inc"
-#include "modules\players\player_command.inc"
 
-#include "modules\server\server_function.inc"
-
-
+// file vehicle module
 #include "modules\vehicles\vehicle_data.inc"
 #include "modules\vehicles\vehicle_core.inc"
-#include "modules\vehicles\vehicle_command.inc"
+
+// file server utils 
+#include "modules\server\server_utils.inc"
+
+#include "modules\cmd\vehicle_command.inc"
+#include "modules\cmd\player_command.inc"
+
+// file discord module
+#include "modules\discord\tesaja.inc"
 
 main()
 {
 }
 
-
 // Disaat gamemode start
 public OnGameModeInit()
 {
+	SendRconCommand("game.mode %s", GAMEMODE);
+	// load skin model untuk skin awal spawn
 	m_SkinSpawn = LoadModelSelectionMenu("male_spawnskin.txt");
 	f_SkinSpawn = LoadModelSelectionMenu("female_spawnskin.txt");
 
-	// mysql
+	// database 
 	ConnectToDatabase(MYSQL_HOST, MYSQL_USER, MYSQL_PASS, MYSQL_DBNAME);
 	
 	CreateGlobalTextdraw();
 
-	SetGameModeText("gamemooodeeeee");
 	DisableInteriorEnterExits();
 	ShowPlayerMarkers(PLAYER_MARKERS_MODE_OFF);
 
@@ -83,6 +92,10 @@ public OnPlayerConnect(playerid)
 	ResetValueVariable(playerid);
 	
 	AccountCheck(playerid);
+
+	if (IsPlayerUsingOfficialClient(playerid))
+        g_PlayerData[playerid][isOfficialClient] = true;
+
 	new ip[16];
 	GetPlayerIp(playerid, ip, sizeof(ip));
 	SendClientMessage(playerid, COLOR_WHITE, "IP : %s", ip);
@@ -102,8 +115,8 @@ public OnPlayerDisconnect(playerid, reason)
 
 public OnPlayerRequestClass(playerid, classid)
 {
-    SetPlayerCameraPos(playerid, 367.9782, -2029.3656, 45.6719);
-    SetPlayerCameraLookAt(playerid, 367.9782, -2029.3656, 45.6719);
+    // SetPlayerCameraPos(playerid, 367.9782, -2029.3656, 45.6719);
+    // SetPlayerCameraLookAt(playerid, 367.9782, -2029.3656, 45.6719);
 	return 1;
 }
 
@@ -225,3 +238,4 @@ public OnPlayerModelSelection(playerid, response, listid, modelid)
 	}
 	return 1;
 }
+
