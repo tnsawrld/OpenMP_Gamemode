@@ -19,15 +19,30 @@ Function::OnUCPChecked(playerid, race_check)
 	new string[180];
 	if(cache_num_rows() > 0)
 	{
-		cache_get_value(0, "password", g_PlayerData[playerid][pPassword]);
+        cache_get_value_name_int(0, "verifycode", g_PlayerData[playerid][pVerifyCode]);
+        cache_get_value_name_int(0, "activation", g_PlayerData[playerid][pActivation]);
+		cache_get_value_name(0, "password", g_PlayerData[playerid][pPassword]);
 
-        format(string, sizeof(string), "{ffffff}Username: {04d400}%s\n{ffffff}Status: {04d400}Terdaftar\n{ffffff}Akun UCP kamu sudah terdaftar kedalam server.\nLogin ke akun kamu dengan memasukan password dibawah:", g_PlayerData[playerid][pUCP]);
-        Dialog_Show(playerid, DialogLogin, DIALOG_STYLE_PASSWORD, "Login", string, "Login", "Close");
+        // printf("kode ucp chked %d", g_PlayerData[playerid][pVerifyCode]);
+        // printf("pw chked %s", g_PlayerData[playerid][pPassword]);
+
+        if(g_PlayerData[playerid][pActivation] == 0)
+        {
+            format(string, sizeof(string), "{ffffff}Username: {04d400}%s\n{ffffff} Status: {04d400}Terdaftar\n{ffffff}Akun UCP kamu sudah terdaftar, silahkan masukan kode verifikasi.", g_PlayerData[playerid][pUCP]);
+            Dialog_Show(playerid, DialogVerifyCode, DIALOG_STYLE_INPUT, "Verifikasi UCP", string, "Input", "Close");
+        }
+        else
+        {
+            format(string, sizeof(string), "{ffffff}Username: {04d400}%s\n{ffffff}Status: {04d400}Terdaftar\n{ffffff}Akun UCP kamu sudah terdaftar kedalam server.\nLogin ke akun kamu dengan memasukan password dibawah:", g_PlayerData[playerid][pUCP]);
+            Dialog_Show(playerid, DialogLogin, DIALOG_STYLE_PASSWORD, "Login", string, "Login", "Close");
+        }
+
 	}
 	else
 	{
-		format(string, sizeof(string), "{ffffff}Username: {04d400}%s\n{ffffff} Status: {bd0000}Tidak terdaftar\n{ffffff}Akun UCP kamu belum terdaftar didalam server.\nSilahkan buat password untuk melanjutkan registrasi.", g_PlayerData[playerid][pUCP]);
-		Dialog_Show(playerid, DialogRegister, DIALOG_STYLE_PASSWORD, "Register", string, "Register", "Close");
+		format(string, sizeof(string), "{ffffff}Username: {04d400}%s\n{ffffff} Status: {bd0000}Tidak terdaftar\n{ffffff}Akun UCP kamu belum terdaftar didalam server.\nSilahkan kunjungi discord server untuk membuat akun UCP.", g_PlayerData[playerid][pUCP]);
+		Dialog_Show(playerid, DialogUnused, DIALOG_STYLE_MSGBOX, "UCP", string, "Close", "");
+        KickEx(playerid);
 	}
 	return 1;
 }
@@ -35,9 +50,11 @@ Function::OnUCPChecked(playerid, race_check)
 Function::OnPasswordHashed(playerid, hash_id)
 {
 	bcrypt_get_hash(g_PlayerData[playerid][pPassword], BCRYPT_HASH_LENGTH);
-
-    new query[150];
-    mysql_format(g_SQL, query, sizeof(query), "INSERT INTO ucp (ucp_name, password) VALUES ('%e', '%s')", g_PlayerData[playerid][pUCP], g_PlayerData[playerid][pPassword]);
+    g_PlayerData[playerid][pActivation] = 1;
+    // printf("pw chked %s", g_PlayerData[playerid][pPassword]);
+    
+    new query[250];
+    mysql_format(g_SQL, query, sizeof(query), "UPDATE ucp set activation = '%d', password = '%e' WHERE ucp_name = '%e'", g_PlayerData[playerid][pActivation], g_PlayerData[playerid][pPassword], g_PlayerData[playerid][pUCP]);
     mysql_tquery(g_SQL, query);
 	return 1;
 }

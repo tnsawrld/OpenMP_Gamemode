@@ -22,6 +22,24 @@ Dialog:DialogLogin(playerid, response, listitem, inputtext[])
 	return 1;
 }
 
+Dialog:DialogVerifyCode(playerid, response, listitem, inputtext[])
+{
+    if(!response) return KickEx(playerid);
+    new string[180];
+
+    if(strval(inputtext) == g_PlayerData[playerid][pVerifyCode])
+    {
+        format(string, sizeof(string), "{ffffff}Username: {04d400}%s\n{ffffff} Status: {bd0000}Tidak terdaftar\n{ffffff}Silahkan buat password untuk melanjutkan proses registrasi.", g_PlayerData[playerid][pUCP]);
+        Dialog_Show(playerid, DialogRegister, DIALOG_STYLE_PASSWORD, "Register", string, "Register", "Close");
+    }
+    else
+    {
+        format(string, sizeof(string), "{ffffff}Username: {04d400}%s\n{ffffff} Status: {bd0000}Tidak terdaftar\n{ffffff}Kode verifikasi tidak sesuai! silahkan coba lagi!.", g_PlayerData[playerid][pUCP]);
+        Dialog_Show(playerid, DialogUnused, DIALOG_STYLE_MSGBOX, "UCP", string, "Close", "");
+    }
+    return 1;
+}
+
 Dialog:DialogListChar(playerid, response, listitem, inputtext[])
 {
 	if(!response) return KickEx(playerid);

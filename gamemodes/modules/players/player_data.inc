@@ -6,6 +6,8 @@ enum E_PLAYER_DATA{
 	// UCP
 	pUCP[MAX_PLAYER_NAME],
 	pPassword[BCRYPT_HASH_LENGTH],
+	pVerifyCode,
+	pActivation,
 
 	// character
 	pCharacter,

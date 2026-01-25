@@ -21,3 +21,7 @@
 - Refactor dan Restructuring kode
 - Menambah sistem UCP (tanpa verifikasi)
 - Max karakter 3
+
+[changelog] 25/01/2026
+- Menambah sistem whitelist UCP
+- itu aja karena malaz

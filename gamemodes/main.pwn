@@ -31,6 +31,7 @@
 #include "modules\server\server_macro.inc"
 #include "modules\server\server_textdraw.pwn"
 #include "modules\server\server_variable.inc"
+#include "modules\server\server_utils.inc"
 
 // file player module
 #include "modules\players\player_data.inc"
@@ -42,14 +43,11 @@
 #include "modules\vehicles\vehicle_data.inc"
 #include "modules\vehicles\vehicle_core.inc"
 
-// file server utils 
-#include "modules\server\server_utils.inc"
-
 #include "modules\cmd\vehicle_command.inc"
 #include "modules\cmd\player_command.inc"
 
 // file discord module
-#include "modules\discord\tesaja.inc"
+#include "modules\discord\discord_cmd.inc"
 
 main()
 {
