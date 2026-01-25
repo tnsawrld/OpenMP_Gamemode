@@ -55,7 +55,10 @@ CREATE TABLE `player` (
 CREATE TABLE `ucp` (
   `id` int(11) NOT NULL,
   `ucp_name` varchar(24) NOT NULL,
-  `password` varchar(128) NOT NULL
+  `discord_id` varchar(30) NOT NULL,
+  `verifycode` mediumint(9) NOT NULL DEFAULT 0,
+  `activation` tinyint(4) NOT NULL DEFAULT 0,
+  `password` varchar(130) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
