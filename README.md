@@ -9,3 +9,5 @@ Plugins yang dipakai
 - [Streamer] https://github.com/samp-incognito/samp-streamer-plugin
 - [mSelection] https://github.com/vdgiapp/mSelection
 - [easyDialog] https://github.com/Awsomedude/easyDialog
+- [Discord connector] https://github.com/maddinat0r/samp-discord-connector
+- [Discord cmd] https://github.com/AkshayMohan/pawn-discord-cmd
