@@ -219,8 +219,8 @@ public OnPlayerModelSelection(playerid, response, listid, modelid)
 		{
 			g_PlayerData[playerid][pSkin] = modelid;
 			
-			new query[128];
-			mysql_format(g_SQL, query, sizeof(query), "SELECT * FROM player WHERE username = '%e'", g_PlayerData[playerid][pName]);
+			new query[288];
+			mysql_format(g_SQL, query, sizeof(query), "INSERT INTO player (username, ucp) VALUES ('%e', '%e')", g_PlayerData[playerid][pName], g_PlayerData[playerid][pUCP]);
 			mysql_tquery(g_SQL, query, "OnInsertCharacter", "d", playerid);
 		}
 	}
@@ -231,8 +231,8 @@ public OnPlayerModelSelection(playerid, response, listid, modelid)
 		{
 			g_PlayerData[playerid][pSkin] = modelid;
 			
-			new query[128];
-			mysql_format(g_SQL, query, sizeof(query), "SELECT * FROM player WHERE username = '%e'", g_PlayerData[playerid][pName]);
+			new query[288];
+			mysql_format(g_SQL, query, sizeof(query), "INSERT INTO player (username, ucp) VALUES ('%e', '%e')", g_PlayerData[playerid][pName], g_PlayerData[playerid][pUCP]);
 			mysql_tquery(g_SQL, query, "OnInsertCharacter", "d", playerid);
 		}
 	}

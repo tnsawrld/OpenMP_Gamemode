@@ -3,3 +3,6 @@ file_backup/
 logs/
 log.txt
 gamemodes/main.amx
+config.json
+omp-gamemode.sublime-project
+omp-gamemode.sublime-workspace

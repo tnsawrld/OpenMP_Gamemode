@@ -122,20 +122,22 @@ stock ShowCharacterList(playerid)
     return 1;
 }
 
+Function::OnUsernameChecked(playerid, const name[], race_check)
+{
+    if(race_check != g_MysqlRaceCheck[playerid])    
+        return KickEx(playerid);
+    
+    new rows = cache_num_rows();
+    if(rows)
+        return Dialog_Show(playerid, DialogCreateChar, DIALOG_STYLE_INPUT, "Create New Character", "{bd0000}Nama sudah pernah dipakai! {ffffff}Gunakan nama lain\nMasukan nama :", "Input", "");
+
+    Dialog_Show(playerid, DialogAge, DIALOG_STYLE_INPUT, "Age", "Masukan tanggal lahir dengan format DD/MM/YYYY (16/01/2005)", "Input", "Tutup");
+    return 1;
+}
+
 Function::OnInsertCharacter(playerid)
 {
-    new rows = cache_num_rows(),
-        query[128];
-    new Cache: sikat;
-
-    if(rows > 0)
-        return Dialog_Show(playerid, DialogCreateChar, DIALOG_STYLE_INPUT, "Create New Character", "{bd0000}Nama sudah pernah dipakai! {ffffff}Gunakan nama lain\nMasukan nama :", "Input", "");
-    
-    mysql_format(g_SQL, query, sizeof(query), "INSERT INTO player (username, ucp) VALUES ('%e', '%e')", g_PlayerData[playerid][pName], g_PlayerData[playerid][pUCP]);
-
-    sikat = mysql_query(g_SQL, query);
     g_PlayerData[playerid][pID] = cache_insert_id();
-    cache_delete(sikat);
 
     SetPlayerName(playerid, g_PlayerData[playerid][pName]);
 

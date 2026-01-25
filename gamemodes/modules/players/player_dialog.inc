@@ -52,10 +52,10 @@ Dialog:DialogCreateChar(playerid, response, listitem, inputtext[])
         return Dialog_Show(playerid, DialogCreateChar, DIALOG_STYLE_INPUT, "Create New Character", "{bd0000}Format salah (Firstname_Lastname)\n{ffffff}Masukan nama dibawah :", "Input", "");
     
     format(g_PlayerData[playerid][pName], MAX_PLAYER_NAME, inputtext);
-    Dialog_Show(playerid, DialogAge, DIALOG_STYLE_INPUT, "Age", "{ffffff}Masukan tanggal lahir karakter\n{FBFF00}format DD/MM/YYYY (12/02/2001)", "Input", "");
-    // new query[128];
-    // mysql_format(g_SQL, query, sizeof(query), "SELECT * FROM player WHERE username = '%e'", inputtext);
-    // mysql_tquery(g_SQL, query, "OnInsertCharacter", "ds", playerid, inputtext);
+    g_MysqlRaceCheck[playerid]++;
+    new query[128];
+    mysql_format(g_SQL, query, sizeof(query), "SELECT username FROM player WHERE username = '%e' LIMIT 1", g_PlayerData[playerid][pName]);
+    mysql_tquery(g_SQL, query, "OnUsernameChecked", "dsd", playerid, g_PlayerData[playerid][pName], g_MysqlRaceCheck[playerid]);
     return 1;
 }
 
